@@ -1,0 +1,82 @@
+Full Commands to Run Your System
+1. Start Ganache (choose one)
+Option A – Ganache GUI (recommended)
+
+Open Ganache desktop app → Create/Open workspace → Ensure RPC port is 7545.
+
+Option B – Ganache CLI
+
+bash
+ganache-cli --port 7545 --networkId 5777 --gasLimit 67219750
+
+2. Deploy Contracts (only once, or after changes)
+bash
+cd C:\Users\alwin\voting-system
+truffle migrate --reset
+
+3. Copy latest contract ABI to frontend
+bash
+copy build\contracts\Voting.json ..\voting-ui\src\contracts\
+
+4. Start React frontend
+bash
+cd C:\Users\alwin\voting-ui
+npm start
+
+5. Open browser
+Go to http://localhost:3000
+
+
+
+🔧 If Gas Limit Error Happens Again
+Error: "exceeded the block limit"
+
+Fix – Update truffle-config.js:
+
+javascript
+networks: {
+  development: {
+    host: "127.0.0.1",
+    port: 7545,
+    network_id: "5777",
+    gas: 30000000,          // <- set lower than block limit
+    gasPrice: 20000000000
+  }
+}
+Or increase Ganache's block gas limit:
+
+GUI: Settings → Chain → Block Gas Limit → set to 67219750
+
+CLI: add --gasLimit 67219750 when starting
+
+Then re-run truffle migrate --reset and copy the new JSON.
+
+
+🔧 If ABI / Contract Mismatch Error
+Symptoms: Parameter decoding error, Returned values aren't valid, or votes not updating.
+
+Fix – ensure the frontend uses the latest contract ABI & address:
+
+bash
+# 1. Recompile & redeploy
+cd C:\Users\alwin\voting-system
+truffle compile --all
+truffle migrate --reset
+
+# 2. Copy the fresh JSON
+copy build\contracts\Voting.json ..\voting-ui\src\contracts\
+
+# 3. Hard refresh browser (Ctrl+F5)
+Also, if you already voted with an account, you cannot vote again – that's the contract's double-vote protection.
+
+To test with a new account, in browser console:
+
+javascript
+const accounts = await web3.eth.getAccounts();
+await window.contract.methods.vote(1).send({ from: accounts[1], gas: 300000 });
+✅ Summary of Working Commands
+Step	Command
+Start Ganache	ganache-cli --port 7545 --networkId 5777 --gasLimit 67219750
+Deploy	cd voting-system && truffle migrate --reset
+Copy ABI	copy build\contracts\Voting.json ..\voting-ui\src\contracts\
+Run frontend	cd voting-ui && npm start
