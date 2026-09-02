@@ -1,0 +1,25 @@
+npm install -g truffle
+npm install -g ganache-cli
+
+#Frontend
+cd C:\Users\alwin\voting-ui
+npm install
+
+#Backebd
+cd C:\Users\alwin\voting-system
+# Truffle and Ganache are globally installed – if not:
+npm install -g truffle ganache-cli
+
+# Start Ganache (GUI or CLI)
+ganache-cli --port 7545 --networkId 5777 --gasLimit 67219750
+
+# Deploy contract
+cd voting-system
+truffle migrate --reset
+
+# Copy ABI to frontend
+copy build\contracts\Voting.json ..\voting-ui\src\contracts\
+
+# Start React app
+cd ..\voting-ui
+npm start
